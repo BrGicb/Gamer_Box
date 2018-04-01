@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">GamerBox</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string-array name="stores">
+        <item >PSstore</item>
+        <item >Steam</item>
+        <item >Uplay</item>
+    </string-array>
+</resources>
