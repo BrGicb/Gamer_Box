@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="PS store"
-        android:id="@+id/psstore"></item>
-    <item android:title="steam"
-        android:id="@+id/steam"></item>
-    <item android:title="Ubi store"
-        android:id="@+id/ubistore"></item>
+    <item
+        android:id="@+id/psstore"
+        android:title="PS store" />
+    <item
+        android:id="@+id/steam"
+        android:title="steam" />
+    <item
+        android:id="@+id/ubistore"
+        android:title="Ubi store" />
 </menu>
