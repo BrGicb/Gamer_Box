@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View.OnClickListener;
 import android.view.View;
 import android.widget.*;
+import android.widget.Button;
 import android.os.Bundle;
 
 
@@ -31,10 +32,14 @@ public class MainActivity extends AppCompatActivity {
         ubibtn = (Button) findViewById(R.id.UB_button);
 
 
+
+
         psbtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SearchPage.class));
+                showAlertDlg();
+
+                //startActivity(new Intent(MainActivity.this, SearchPage.class));
                 //↑页面跳转
                 searchedstore = 0;
             }
@@ -43,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         stmbtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 startActivity(new Intent(MainActivity.this, SearchPage.class));
                 //↑页面跳转
                 searchedstore = 1;
@@ -52,13 +59,36 @@ public class MainActivity extends AppCompatActivity {
         ubibtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SearchPage.class));
+                showAlertDlg();
+
+                //startActivity(new Intent(MainActivity.this, SearchPage.class));
                 //↑页面跳转
                 searchedstore = 2;
             }
         });
 
     }
+
+    private void showAlertDlg(){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+        dialog.setTitle("Sorry");
+        dialog.setMessage("In development, it can't be used for the time being");
+        dialog.setCancelable(false);
+        dialog.setPositiveButton("继续", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        dialog.setNegativeButton("退出", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        dialog.show();
+    }
+
 
 
 }
