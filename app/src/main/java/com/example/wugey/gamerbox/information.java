@@ -1,40 +1,26 @@
 package com.example.wugey.gamerbox;
 
-import android.annotation.SuppressLint;
+
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.RandomAccessFile;
 
-import static java.lang.Thread.sleep;
 
 public class information extends AppCompatActivity {
     String forappid = SearchPage.forappid;
@@ -81,7 +67,11 @@ public class information extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 return (event.getAction() == MotionEvent.ACTION_MOVE);
             }
+
         });
+
+
+
         webView.getSettings().setSupportZoom(true);
         webView.getSettings().setBuiltInZoomControls(true);
         webView.setWebViewClient(new WebViewClient(){
@@ -93,34 +83,106 @@ public class information extends AppCompatActivity {
                 ScrollView scrollView = (ScrollView)findViewById(R.id.scroll);
                 scrollView.smoothScrollTo(0,1);
             }
+
+            // 重写此方法表明点击网页里面的链接不跳转
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return true;
+            }
+
         });
     }
+
+    //新建txt
+    private void initData() {
+        String filePath = "/sdcard/";
+        String fileName = "game.html";
+        String str = "<iframe src=\"https://steamdb.info/embed/?appid="+appid+"\" height=\"389px\" width=\"100%\" scrolling=\"yes\" frameborder=\"0\"></iframe>";
+        writeTxtToFile(str, filePath, fileName);
+    }
+
+    // 将字符串写入到文本文件中
+    public void writeTxtToFile(String strcontent, String filePath, String fileName) {
+        //生成文件夹之后，再生成文件，不然会出错
+        makeFilePath(filePath, fileName);
+
+        String strFilePath = filePath+fileName;
+        // 每次写入时，都换行写
+        String strContent = strcontent + "\r\n";
+        try {
+            File file = new File(strFilePath);
+            if(file.exists()){
+                file.delete();
+            }
+            if (!file.exists()) {
+                Log.d("TestFile", "Create the file:" + strFilePath);
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
+            RandomAccessFile raf = new RandomAccessFile(file, "rwd");
+            raf.seek(file.length());
+            raf.write(strContent.getBytes());
+            raf.close();
+        } catch (Exception e) {
+            Log.e("TestFile", "Error on write File:" + e);
+        }
+    }
+
+    // 生成文件
+    public File makeFilePath(String filePath, String fileName) {
+        File file = null;
+        makeRootDirectory(filePath);
+        try {
+            file = new File(filePath + fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    // 生成文件夹
+    public static void makeRootDirectory(String filePath) {
+        File file = null;
+        try {
+            file = new File(filePath);
+            if (!file.exists()) {
+                file.mkdir();
+            }
+        } catch (Exception e) {
+            Log.i("error:", e+"");
+        }
+    }
+
 
     void setpricechart() throws IOException {
         WebView webView = (WebView)findViewById(R.id.pricechart);
         TextView textView = (TextView)findViewById(R.id.textView3);
 
         //根据获取的信息写html文件
-        String str = "<iframe src=\\\"https://steamdb.info/embed/?appid=730\\\" height=\\\"389px\\\" width=\\\"100%\\\" scrolling=\\\"no\\\" frameborder=\\\"0\\\"></iframe>";
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter("src/main/assets/game.html", false); // 打开一个写文件器，构造函数中的第二个参数true表示以追加形式写文件,false表示覆盖的方式写入
-            writer.write(str);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
+        //String str = "<iframe src=\\\"https://steamdb.info/embed/?appid=730\\\" height=\\\"389px\\\" width=\\\"100%\\\" scrolling=\\\"yes\\\" frameborder=\\\"0\\\"></iframe>";
+
+
+            /*FileOutputStream fos = null;
+            String str = "<iframe src=\"https://steamdb.info/embed/?appid="+appid+"\" height=\"389px\" width=\"100%\" scrolling=\"yes\" frameborder=\"0\"></iframe>";
             try {
-                if(writer != null){
-                    writer.close();
-                }
-            } catch (IOException e) {
+                fos = openFileOutput("game.html", Context.MODE_PRIVATE);
+                fos.write(str.getBytes());
+                fos.flush();
+                fos.close();
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
-            }
-        }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }*/
+        initData();
+
 
 
         //打开写好的html文件
-        webView.loadUrl("file:///android_asset/game.html");
+        webView.loadUrl("file:///sdcard/game.html");
         //webView.loadUrl(str);
         //webView.loadUrl("https://steamdb.info/app/"+appid+"/graphs/");
 
@@ -133,7 +195,15 @@ public class information extends AppCompatActivity {
                 ScrollView scrollView = (ScrollView)findViewById(R.id.scroll);
                 scrollView.smoothScrollTo(0,1);
             }
+
+            // 重写此方法表明点击网页里面的链接不跳转
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return true;
+            }
         });
+
+
     }
 
 
