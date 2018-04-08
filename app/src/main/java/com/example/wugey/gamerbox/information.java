@@ -20,10 +20,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -49,7 +53,11 @@ public class information extends AppCompatActivity {
 
         //new show_info().execute();
         setwebchart();
-        setpricechart();
+        try {
+            setpricechart();
+        }  catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //定位至开头
         ScrollView scrollView = (ScrollView)findViewById(R.id.scroll);
@@ -88,28 +96,40 @@ public class information extends AppCompatActivity {
         });
     }
 
-    void setpricechart(){
+    void setpricechart() throws IOException {
         WebView webView = (WebView)findViewById(R.id.pricechart);
         TextView textView = (TextView)findViewById(R.id.textView3);
-        webView.loadUrl("https://steamdb.info/app/"+appid+"/graphs/");
-        webView.getScrollY();
-        // disable scroll on touch禁止表格页面的滑动
-        webView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return (event.getAction() == MotionEvent.ACTION_MOVE);
+
+        //根据获取的信息写html文件
+        String str = "<iframe src=\\\"https://steamdb.info/embed/?appid=730\\\" height=\\\"389px\\\" width=\\\"100%\\\" scrolling=\\\"no\\\" frameborder=\\\"0\\\"></iframe>";
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter("src/main/assets/game.html", false); // 打开一个写文件器，构造函数中的第二个参数true表示以追加形式写文件,false表示覆盖的方式写入
+            writer.write(str);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if(writer != null){
+                    writer.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
+        }
+
+
+        //打开写好的html文件
+        webView.loadUrl("file:///android_asset/game.html");
+        //webView.loadUrl(str);
+        //webView.loadUrl("https://steamdb.info/app/"+appid+"/graphs/");
+
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setSupportZoom(true);
-        webView.getSettings().setBuiltInZoomControls(true);
         webView.setWebViewClient(new WebViewClient(){
             //页面加载完之后再显示
             public void onPageFinished(WebView view, String url) {
                 webView.setVisibility(View.VISIBLE);
                 textView.setVisibility(View.VISIBLE);
-                webView.setInitialScale(100);
-                webView.scrollTo(8,850);
                 ScrollView scrollView = (ScrollView)findViewById(R.id.scroll);
                 scrollView.smoothScrollTo(0,1);
             }
